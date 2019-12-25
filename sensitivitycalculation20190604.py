@@ -1,7 +1,7 @@
 import numpy as np
 import function as f
-import fp as fp
-import opt as op
+import fp_newband as fp
+import opt_newband as op
 import matplotlib.pyplot as plt
 
 pi = f.pi
@@ -19,7 +19,7 @@ DC = 1.0
 
 
 #######################################################################
-t=3.*365.*24.*60.*60.*0.95*0.95*DC;# 3 years ovservation time including cosmic ray loss (0.95), margin (0.95) and observation duty cycle
+t=3.*365.*24.*60.*60.*0.95*0.95*DC;# 3 years ovservation time including cosmic ray loss (0.95), margin (0.95) and sub-K cooler duty cycle
 Freq = np.array([40., 50., 60., 68., 78., 89., 100., 119., 140., 166., 195., 235., 280, 337., 402.]);
 m1=4
 n1=3
@@ -52,12 +52,16 @@ bf_HFT, Fnum_HFT = op.HFT_Apt(confHFT)
 det_eff_HFT = op.HFT_Det(confHFT) 
 ref_horn = 0.05
 emiss_L1, emiss_L2 = op.HDPE_Emiss(confHFT)
-                   
+
+#Sapphire HWP for HFT
+#t_hwp, n_hwp, tan_hwp, ref_hwp_sap = op.Sap_HWP()
+                       
 #Mirror 
 epsilon, rho, rms = op.Mir()
 
 #Field and Objective Lenses
 t_lens1,t_lens2, t_lens3, t_lens4,n_lens, tan_lens, ref_lens = op.HDPE_Lens()
+#t_lens1,t_lens2, t_lens3, t_lens4,n_lens, tan_lens, ref_lens = op.Si_Lens()
 
 #2K filter
 t_fil, n_fil, tan_fil, ref_fil =op.Fil()
@@ -87,8 +91,7 @@ for i in range(0,m1):
         hwp_eff = f.Hwp(hwp_emiss_LFT[i][j], ref_hwp_LFT[i][j])
         
         for k in range(0,num):
-            #freq = freq_l+(freq_h - freq_l)*k/(num-1)
-            freq = freq_l+(freq_h - freq_l)*k/num
+            freq = freq_l+(freq_h - freq_l)*k/(num-1)
             hwp_emiss_ref = hwp_emiss_LFT[i][j] + ref_hwp_LFT[i][j]*f.BB(freq*1.e9, Tr_hwp)/f.BB(freq*1.e9, T_hwp_LFT)
             apt_emiss, apt_eff = f.Aperture(dpixLFT[i][j]*1.e-3, bf_LFT, Fnum_LFT, freq*1.e9)
             spill20K = hwp_holder_LFT[i][j]
@@ -133,10 +136,7 @@ for i in range(0,m1):
 
            # if freq==freqLFT[i][j]:
            #     print round(freq,2),", ",round(p_cmb*1.e24, 3),", ",round(p_hwp*1.e24, 3),", ",round(p_apt*1.e24, 3),", ",round(p_pm*1.e24, 3),", ",round(p_sm*1.e24, 3),", ",round(p_fil*1.e24, 3),", ",round(p_len*1.e24, 3),", ",round(p_opt*1.e24, 3),", ",round(p_20K*1.e24, 3)
-            if freq==freqLFT[0][0]:
-                 print round(freq,2),", ",p_hwp,", ",p_apt,", ",p_20K,", ",p_pm,", ",p_sm,", ",p_fil,", ",p_len,",",p_opt
-                #print round(freq,2),", ",p_hwp
-                
+
             
             p_opt_arr[k] = p_opt
             p_cmb_arr[k] = p_cmb
@@ -162,9 +162,13 @@ for i in range(0,m1):
         Plen = np.sum(p_len_arr)*(freq_h-freq_l)*1.e9/num*1.e12 # in unit of pW
         P20K = np.sum(p_20K_arr)*(freq_h-freq_l)*1.e9/num*1.e12 # in unit of pW
 
-        Psat = 2.5*Popt    
+        Psat = 2.5*Popt
+        
+       # if (Psat<=1.0):
+       #     Psat = 1.0
        
         NEPopt =np.sqrt(np.sum(nep_opt_arr)*(freq_h-freq_l)*1.e9/num)*1.e18 # in unit of aW
+       # NEPth = np.sqrt(4.*k_b*2.5*Popt*1.e-12*T_bath*(3.+1.)**2./(2.*3.+3.)*(1.71**(2.*3.+3.)-1.)/((1.71**(3.+1.)-1.)**2.))*1.e18
         NEPth = np.sqrt(4.*k_b*Psat*1.e-12*T_bath*(3.+1.)**2./(2.*3.+3.)*(1.71**(2.*3.+3.)-1.)/((1.71**(3.+1.)-1.)**2.))*1.e18
         NEPread = np.sqrt(0.21*(NEPopt**2.+NEPth**2.))
         NEPint = np.sqrt(NEPopt**2. + NEPth**2. + NEPread**2.)
@@ -173,13 +177,12 @@ for i in range(0,m1):
         NETarrLFT[i][j] = NETdet/np.sqrt(2.*npixLFT[i][j])  
         NETarrLFTmargin[i][j] = NETdet*1.15/np.sqrt(2.*npixLFT[i][j]*0.8)  
 
-        #print round(freqLFT[i][j],2)," , ",round(Popt,2)," , ",round(Psat,2)," , ",round(NEPopt,2)," , ",round(NEPth,2)," , ",round(NEPread,2)," , ",round(NEPint,2)," , ",round(NETdet,2)," , ",round(NETarrLFT[i][j],2)," , ",round(NETarrLFTmargin[i][j],2)
+       # print round(freqLFT[i][j],2)," , ",round(Popt,2)," , ",round(Psat,2)," , ",round(NEPopt,2)," , ",round(NEPth,2)," , ",round(NEPread,2)," , ",round(NEPint,2)," , ",round(NETdet,2)," , ",round(NETarrLFT[i][j],2)," , ",round(NETarrLFTmargin[i][j],2)
        # print round(freqLFT[i][j],2)," , ",round(Pcmb,3)," , ",round(Phwp,3)," , ",round(Papt,3)," , ",round(Plens,3)," , ",Pfil," , ",round(Plen,3)," , ",round(P20K,3)," , ",round(Popt,3)
-       # print round(freqLFT[i][j],2)," , ",round(Pcmb,5)
 
 ##########################################################################
 
-####################### MHFT noise calculation ############################
+####################### HFT noise calculation ############################
 
 NETarrHFT=([[0.,0.,0.,0.,0],[0.,0.,0.,0.,0.]])
 NETarrHFTmargin=([[0.,0.,0.,0.,0.],[0.,0.,0.,0.,0.]])
@@ -202,12 +205,25 @@ for i in range(0,m2):
                 sm_emiss_ref = sm_emiss + sm_loss*f.BB(freq*1.e9, Tr_mir)/f.BB(freq*1.e9, T_mir)
                 
             if (confHFT == 2): # Split Refractive Option 
+                
+               # if(i==0):# MFT lens
+                    # pm_emiss, pm_eff = f.Trm(t_lens1, n_lens, tan_lens, freq*1.e9, ref_lens)
+                    # pm_emiss_ref = pm_emiss + ref_lens*f.BB(freq*1.e9, Tr_lens)/f.BB(freq*1.e9, T_lens)
+                    # sm_emiss, sm_eff = f.Trm(t_lens2, n_lens, tan_lens, freq*1.e9, ref_lens)
+                    # sm_emiss_ref = sm_emiss + ref_lens*f.BB(freq*1.e9, Tr_lens)/f.BB(freq*1.e9, T_lens)
+                # if(i==1) :# HFT lens
+                    # pm_emiss, pm_eff = f.Trm(t_lens3, n_lens, tan_lens, freq*1.e9, ref_lens)
+                    # pm_emiss_ref = pm_emiss + ref_lens*f.BB(freq*1.e9, Tr_lens)/f.BB(freq*1.e9, T_lens)
+                    # sm_emiss, sm_eff = f.Trm(t_lens4, n_lens, tan_lens, freq*1.e9, ref_lens)
+                    # sm_emiss_ref = sm_emiss + ref_lens*f.BB(freq*1.e9, Tr_lens)/f.BB(freq*1.e9, T_lens)
+                    
                 pm_emiss = emiss_L1[i][j]
                 sm_emiss = emiss_L2[i][j]
                 pm_eff = 1. - pm_emiss - ref_lens
                 sm_eff = 1. - sm_emiss - ref_lens
                 pm_emiss_ref = pm_emiss + ref_lens*f.BB(freq*1.e9, Tr_lens)/f.BB(freq*1.e9, T_lens)
                 sm_emiss_ref = sm_emiss + ref_lens*f.BB(freq*1.e9, Tr_lens)/f.BB(freq*1.e9, T_lens)
+                    
                
             fil_emiss, fil_eff = f.Trm(t_fil, n_fil, tan_fil, freq*1.e9, ref_fil)
             fil_emiss_ref = fil_emiss + ref_fil*f.BB(freq*1.e9, Tr_fil)/f.BB(freq*1.e9, T_fil)
@@ -243,8 +259,12 @@ for i in range(0,m2):
             p_opt = p_cmb + p_hwp + p_apt + p_pm + p_sm + p_fil + p_len 
 
            # if freq==freqHFT[i][j]:
-
-           # print round(freq,2),", ",p_cmb,", ",p_hwp,", ",p_apt,", ",p_pm,", ",p_sm,", ",p_fil,", ",p_len,", ",p_det
+               # print round(freq,2),", ",p_cmb,", ",p_hwp,", ",p_apt,", ",p_pm,", ",p_sm,", ",p_fil,", ",p_len,", ",p_det
+               # print round(freq,2),"hwp_eff, ",hwp_eff,"apt_eff, ",apt_eff,"pm_eff, ",pm_eff,"sm_eff, ",sm_eff,"fil_eff, ",fil_eff,"len_eff, ",len_eff,"det_eff, ",det_eff_HFT[i][j]
+               # print round(freq,2),"hwp_emiss, ",hwp_emiss_HFT[i][j],"apt_emiss, ",apt_emiss,"lens1_emiss, ",pm_emiss,"lens2_eff, ",sm_emiss,"2Kfilter_emiss, ",fil_emiss,"lenslet_emiss, ",len_emiss
+               # print "spillover eff =",apt_emiss
+           # print "m= ",m2,"n1= ",n2,"k= ",k,"freq= ",freq
+     
             eff = hwp_eff*apt_eff*pm_eff*sm_eff*fil_eff*len_eff*det_eff_HFT[i][j]
                    
             p_opt_arr[k] = p_opt
@@ -270,6 +290,9 @@ for i in range(0,m2):
         
         Psat = 2.5*Popt
         
+       # if (Psat<=1.0):
+       #     Psat = 1.0
+            
         NEPopt =np.sqrt(np.sum(nep_opt_arr)*(freq_h-freq_l)*1.e9/num)*1.e18 # in unit of aW
         NEPth = np.sqrt(4.*k_b*Psat*1.e-12*T_bath*(3.+1.)**2./(2.*3.+3.)*(1.71**(2.*3.+3.)-1.)/((1.71**(3.+1.)-1.)**2.))*1.e18
         NEPread = np.sqrt(0.21*(NEPopt**2.+NEPth**2.))

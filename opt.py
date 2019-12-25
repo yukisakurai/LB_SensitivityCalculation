@@ -1,3 +1,4 @@
+
 import numpy as np
 
 ############################# Optics Temperatures ############################################
@@ -25,91 +26,60 @@ def Temp_Opt():
 
 ##### LFT #####
 def LFT_Hwp(confLFT):#LFT HWP with ARC 
+   # hwp_emiss_LFT = np.array([[3.83e-3, 5.79e-3, 7.52e-3],[4.81e-3, 6.57e-3, 8.59e-3],[6.57e-3, 8.59e-3, 1.15e-2],[7.52e-3, 9.66e-3, 1.35e-2]])
+   # ref_hwp_LFT = np.array([[0.116, 0.03, 0.036],[0.046, 0.033, 0.027],[0.033, 0.027, 0.016],[0.036, 0.02, 0.013]])
     hwp_emiss_LFT = np.array([[0.38e-2, 0.58e-2, 0.75e-2],[0.48e-2, 0.66e-2, 0.97e-2],[0.66e-2, 0.97e-2, 1.35e-2],[0.75e-2, 1.15e-2, 1.61e-2]])
+   # ref_hwp_LFT = np.array([[0.175, 0.068, 0.042],[0.103, 0.051, 0.037],[0.051, 0.037, 0.013],[0.042, 0.028, 0.001]])
     ref_hwp_LFT = np.array([[0.1, 0.068, 0.042],[0.1, 0.051, 0.037],[0.051, 0.037, 0.013],[0.042, 0.028, 0.001]])
-    pol_hwp_LFT = np.array([[0.783, 0.965, 0.960],[0.929, 0.961, 0.970],[0.961, 0.970, 0.982],[0.960, 0.980, 0.964]])
-    pol_dil_LFT = np.array([[0.984, 0.984, 0.984],[0.984, 0.984, 0.984],[0.984, 0.984, 0.984],[0.984, 0.984, 0.984]]) 
-    return hwp_emiss_LFT, ref_hwp_LFT, pol_hwp_LFT, pol_dil_LFT
+   # ref_hwp_LFT = np.array([[0., 0., 0.],[0.103, 0.051, 0.037],[0.051, 0.037, 0.013],[0.042, 0.028, 0.001]])
+   
+
+#   # hwp_holder_LFT = np.array([[0.013, 0.013, 0.013],[0.013, 0.013, 0.013],[0.013, 0.013, 0.013],[0.013, 0.013, 0.013]])
+    hwp_holder_LFT = np.array([[1.3e-2, 0.49e-2, 0.15e-2],[0.84e-2, 0.3e-2, 0.06e-2],[1.03e-2, 0.51e-2, 0.13e-2],[0.75e-2, 0.33e-2, 0.04e-2]])
+    return hwp_emiss_LFT, ref_hwp_LFT, hwp_holder_LFT
 
 def LFT_Apt(confLFT):# LFT aperture 
     bf_LFT = 2.75 #beam waist factor
-    Fnum_LFT = 2.0 #F number
+    Fnum_LFT = 3. #F number
     return bf_LFT, Fnum_LFT
 
-def LFT_Spill(confLFT):
-    spill_5Kenve = np.array([[0.495, 0.222, 0.100],[0.340, 0.155, 0.067],[0.413, 0.232, 0.095],[0.317, 0.166, 0.059]]) 
-    spill_5Khood = np.array([[0.005, 0.004, 0.003],[0.005, 0.004, 0.003],[0.004, 0.003, 0.003],[0.004, 0.003, 0.003]]) 
-    spill_20K    = np.array([[0.010, 0.009, 0.008],[0.010, 0.009, 0.008],[0.009, 0.008, 0.008],[0.009, 0.008, 0.008]]) 
-    apt_eff = 1.-spill_5Kenve - spill_5Khood - spill_20K
-    return spill_5Kenve, spill_5Khood, spill_20K, apt_eff
-
 def LFT_Det(confLFT):# detector coupling efficiency
-    det_eff_LFT =  np.array([[0.68, 0.68, 0.68 ],[0.68, 0.68, 0.68],[0.68, 0.68, 0.68],[0.68, 0.68, 0.68]]) 
+    det_eff_LFT = 0.68
     return det_eff_LFT 
 
-##### MHFT #####
+##### HFT #####
 def HFT_Hwp(confHFT):
-    if confHFT == 0:#embedded mesh HWP for reflective HFT at Inductive axis for V28    
-        hwp_emiss_HFT = np.array([[0.035, 0.024, 0.019, 0.015, 0.014],[0.053, 0.033, 0.025, 0.020, 0.023]])  
-        ref_hwp_HFT   = np.array([[0.010, 0.019, 0.024, 0.012, 0.010],[0.025, 0.021, 0.025, 0.013, 0.009]])
-        pol_hwp_HFT   = np.array([[0.987, 0.955, 0.938, 0.956, 0.984],[0.981, 0.966, 0.955, 0.977, 0.984]])# polarization efficiency
-        pol_dil_HFT   = np.array([[0.988, 0.988, 0.988, 0.988, 0.988],[0.972, 0.972, 0.972, 0.972, 0.972]])# HWP rotation dilution factor
-        
-    if confHFT == 1:#embedded mesh HWP for reflective HFT at Capacitive axis for V28    
-        hwp_emiss_HFT = np.array([[0.004, 0.005, 0.007, 0.010, 0.014],[0.006, 0.008, 0.011, 0.015, 0.023]])  
-        ref_hwp_HFT   = np.array([[0.018, 0.030, 0.019, 0.010, 0.010],[0.020, 0.029, 0.018, 0.013, 0.009]])
-        pol_hwp_HFT   = np.array([[0.987, 0.955, 0.938, 0.956, 0.984],[0.981, 0.966, 0.955, 0.977, 0.984]])# polarization efficiency
-        pol_dil_HFT   = np.array([[0.988, 0.988, 0.988, 0.988, 0.988],[0.972, 0.972, 0.972, 0.972, 0.972]])# HWP rotation dilution factor
-        
-        
+    if confHFT == 0:#embedded mesh HWP for reflective HFT   
+        hwp_emiss_HFT = np.array([[2.1e-2,2.1e-2,2.1e-2],[2.1e-2,2.1e-2,2.1e-2],[2.1e-2,2.1e-2,2.1e-2]])
+        ref_hwp_HFT = np.array([[0.,0.,0.],[0.,0.,0.],[0.,0.,0.]])
+    if confHFT == 1:#transmissive mesh HWP for split HFT
+        hwp_emiss_HFT = np.array([[3.3e-2, 3.3e-2, 3.3e-2],[3.3e-2, 3.3e-2, 3.3e-2],[3.e-2, 3.e-2, 3.e-2]])  
+        ref_hwp_HFT = np.array([[0.,0.,0.],[0.,0.,0.],[0.,0.,0.]])
     if confHFT == 2:#transmissive mesh HWP for split HFT
-        hwp_emiss_HFT = np.array([[4.4e-2, 2.7e-2, 2.1e-2, 1.7e-2, 2.4e-2], [2.1e-2,1.7e-2, 2.1e-2, 1.7e-2, 2.7e-2]])  
-        ref_hwp_HFT = np.array([[0, 0, 0, 0, 0.],[0, 0, 0, 0, 0]])
-        pol_hwp_HFT   = np.array([[1., 1., 1., 1., 1.],[1., 1., 1., 1., 1.]])
-        pol_dil_HFT   = np.array([[1., 1., 1., 1., 1.],[1., 1., 1., 1., 1.]])# HWP rotation dilution factor
-      
-    return hwp_emiss_HFT, ref_hwp_HFT, pol_hwp_HFT, pol_dil_HFT 
+        hwp_emiss_HFT = np.array([[4.4e-2, 2.1e-2, 2.4e-2],[2.7e-2, 1.7e-2, 2.8e-2],[2.1e-2, 1.7e-2, 2.7e-2]])  
+        ref_hwp_HFT = np.array([[0.,0.,0.],[0.,0.,0.],[0.,0.,0.]])
+     
+    return hwp_emiss_HFT, ref_hwp_HFT 
 
 def HFT_Apt(confHFT):
-    if confHFT == 0:#V28
-        bf_HFT   = np.array([[2.75,2.75,2.75,2.75,2.75],[3.1, 3.1, 3.1,3.1,3.1]])
-        Fnum_HFT = np.array([[2.4,2.4,2.4,2.4,2.4],[2.5,2.5,2.5,2.5,2.5]])
+    if confHFT == 0:#reflective HFT aperture
+        bf_HFT = np.array([[2.75,2.75,2.75],[2.75,2.75,2.75],[3.1,3.1,3.1]])
+        Fnum_HFT = 3.5
     if confHFT == 1:#split HFT aperture
-        bf_HFT   = np.array([[2.75,2.75,2.75,2.75,2.75],[3.1, 3.1, 3.1,3.1,3.1]])
-        Fnum_HFT = np.array([[2.4,2.4,2.4,2.4,2.4],[2.5,2.5,2.5,2.5,2.5]])
-      
+        bf_HFT = np.array([[2.75,2.75,2.75],[2.75,2.75,2.75],[3.1,3.1,3.1]])
+        Fnum_HFT = 2.2
     if confHFT == 2:#split HFT aperture
-        bf_HFT = np.array([[2.75,2.75,2.75,2.75,2.75],[3.1, 3.1, 3.1,3.1,3.1]])
-        Fnum_HFT = np.array([[2.2, 2.2, 2.2, 2.2, 2.2],[2.2,2.2,2.2,2.2,2.2]])
-     
+        bf_HFT = np.array([[2.75,2.75,2.75],[2.75,2.75,2.75],[3.1,3.1,3.1]])
+       # bf_HFT = np.array([[2.75,2.75,2.75],[2.75,2.75,2.75],[2.75,2.75,3.1]])
+       # Fnum_HFT = 3.0
+        Fnum_HFT = 2.2
     return bf_HFT, Fnum_HFT 
 
 def HFT_Det(confHFT):# detector coupling efficiency
-    det_eff_HFT = np.array([[0.68,0.68,0.68,0.68,0.68],[0.75, 0.75, 0.75,0.75,0.75]])
+    #det_eff_HFT = np.array([[0.68,0.68,0.68],[0.68,0.68,0.68],[0.75,0.85,0.75]])
+    det_eff_HFT = np.array([[0.68,0.68,0.68],[0.68,0.68,0.68],[0.75,0.75,0.75]])
   
     return det_eff_HFT 
-
-
-def HFT_Lens(confHFT):
-    if confHFT == 0:#V28
-        emiss_L1 = np.array([[0.033, 0.035, 0.037, 0.040, 0.043],[0.039, 0.044, 0.049, 0.058, 0.069]])
-        emiss_L2 = np.array([[0.034, 0.036, 0.037, 0.039, 0.043],[0.038, 0.041, 0.045, 0.051, 0.060]])
-        ref_L1   = np.array([[0.021, 0.021, 0.021, 0.021, 0.021],[0.024, 0.024, 0.024, 0.024, 0.024]])
-        ref_L2   = np.array([[0.021, 0.021, 0.021, 0.021, 0.021],[0.024, 0.024, 0.024, 0.024, 0.024]])
-
-    if confHFT == 1:#V28
-        emiss_L1 = np.array([[1.8e-2, 1.91e-2, 2.03e-2, 2.21e-2, 2.45e-2],[2.21e-2, 2.37e-2, 2.69e-2, 3.17e-2, 3.82e-2]])
-        emiss_L2 = np.array([[1.8e-2, 1.91e-2, 2.03e-2, 2.21e-2, 2.45e-2],[2.21e-2, 2.37e-2, 2.69e-2, 3.17e-2, 3.82e-2]])
-        ref_L1   = np.array([[0.021, 0.021, 0.021, 0.021, 0.021],[0.024, 0.024, 0.024, 0.024, 0.024]])
-        ref_L2   = np.array([[0.021, 0.021, 0.021, 0.021, 0.021],[0.024, 0.024, 0.024, 0.024, 0.024]])
-
-    if confHFT == 2:#V27
-        emiss_L1 = np.array([[1.8e-2, 1.91e-2, 2.03e-2, 2.21e-2, 2.45e-2],[2.21e-2, 2.37e-2, 2.69e-2, 3.17e-2, 3.82e-2]])
-        emiss_L2 = np.array([[1.8e-2, 1.91e-2, 2.03e-2, 2.21e-2, 2.45e-2],[2.21e-2, 2.37e-2, 2.69e-2, 3.17e-2, 3.82e-2]])
-        ref_L1   = np.array([[0.030, 0.030, 0.030, 0.030, 0.030],[0.030, 0.030, 0.030, 0.030, 0.030]])
-        ref_L2   = np.array([[0.030, 0.030, 0.030, 0.030, 0.030],[0.030, 0.030, 0.030, 0.030, 0.030]])
-    
-    return emiss_L1, emiss_L2, ref_L1, ref_L2
 
 ##### common optics #####
 def Sap_HWP():#Sapphire HWP for HFT
@@ -125,6 +95,29 @@ def Mir():#Mirror
     rms = 2.e-6 #sirface roughness
     return epsilon, rho, rms
 
+def Si_Lens():#Field and Objective Lenses
+    t_lens1 = 20.e-3
+    t_lens2 = 20.e-3
+    t_lens3 = 20.e-3
+    t_lens4 = 20.e-3
+   # t_lens = 20.e-3
+    n_lens = 3.4
+    tan_lens = 5.e-5
+    ref_lens = 0.03
+    return t_lens1, t_lens2,t_lens3,t_lens4, n_lens, tan_lens, ref_lens
+
+def HDPE_Lens():#Field and Objective Lenses
+    t_lens1 = 30.e-3
+    t_lens2 = 45.e-3
+    t_lens3 = 25.e-3
+    t_lens4 = 30.e-3
+   # n_lens = 1.57
+    n_lens = 1.52
+   # tan_lens = 5.e-5
+    tan_lens = 3.e-4
+    ref_lens = 0.03
+     
+    return t_lens1, t_lens2,t_lens3,t_lens4,n_lens, tan_lens, ref_lens
 
 
 def Fil():#2K filter
